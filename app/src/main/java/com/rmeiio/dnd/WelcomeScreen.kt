@@ -60,11 +60,11 @@ fun WelcomeScreen(navController: NavController, context: Context) {
 
         Button(
             onClick = {
-                //if (databaseHelper.hasCharacter()) {
-                //    navController.navigate("success")
-                //} else {
+                if (databaseHelper.hasCharacter()) {
+                    navController.navigate("character_list")
+                } else {
                     navController.navigate("name_and_class")
-                //}
+                }
             },
             colors = ButtonDefaults.buttonColors(Color.Red),
             modifier = Modifier.padding(8.dp)

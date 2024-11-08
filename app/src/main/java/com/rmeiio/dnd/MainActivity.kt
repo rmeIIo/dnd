@@ -1,5 +1,6 @@
 package com.rmeiio.dnd
 
+import CharacterEditScreen
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -32,6 +33,7 @@ class MainActivity : ComponentActivity() {
                     NavHost(navController, startDestination = "welcome") {
                         composable("welcome") {WelcomeScreen(navController, this@MainActivity)}
                         composable("name_and_class") { NameAndClassScreen(navController, this@MainActivity) }
+                        composable("character_list") { CharacterListScreen(navController, this@MainActivity) }
                         composable("race/{characterId}") { backStackEntry ->
                             val characterId = backStackEntry.arguments?.getString("characterId")?.toInt() ?: 0
                             RaceScreen(navController, characterId, this@MainActivity)
@@ -39,6 +41,14 @@ class MainActivity : ComponentActivity() {
                         composable("attribute_distribution/{characterId}") { backStackEntry ->
                             val characterId = backStackEntry.arguments?.getString("characterId")?.toInt() ?: 0
                             AttributeDistributionScreen(navController, characterId, this@MainActivity)
+                        }
+                        composable("character_detail/{characterId}") { backStackEntry ->
+                            val characterId = backStackEntry.arguments?.getString("characterId")?.toInt() ?: 0
+                            CharacterDetailScreen(navController, characterId, this@MainActivity)
+                        }
+                        composable("update_character/{characterId}") { backStackEntry ->
+                            val characterId = backStackEntry.arguments?.getString("characterId")?.toInt() ?: 0
+                            CharacterEditScreen(navController, characterId, this@MainActivity)
                         }
                         composable("success") { SuccessScreen(navController) }
                     }

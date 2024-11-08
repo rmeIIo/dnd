@@ -150,9 +150,77 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
             null // Retorne null se não encontrar atributos
         }
     }
+
+    fun getAllCharacters(): List<Character> {
+        val db = this.readableDatabase
+        val characterList = mutableListOf<Character>()
+        val cursor = db.rawQuery("SELECT * FROM $TABLE_CHARACTER", null)
+
+        if (cursor.moveToFirst()) {
+            do {
+                val attributes = Attributes(
+                    forca = cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_FORCA)),
+                    destreza = cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_DESTREZA)),
+                    constituicao = cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_CONSTITUICAO)),
+                    inteligencia = cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_INTELIGENCIA)),
+                    sabedoria = cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_SABEDORIA)),
+                    carisma = cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_CARISMA))
+                )
+
+                val character = Character(
+                    id = cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_ID)),
+                    name = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_NAME)),
+                    charClass = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_CLASS)),
+                    race = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_RACE)),
+                    attributes = attributes
+                )
+                characterList.add(character)
+            } while (cursor.moveToNext())
+        }
+        cursor.close()
+        return characterList
+    }
+
+    fun getCharacterById(id: Int): Character? {
+        val db = this.readableDatabase
+        val cursor = db.query(
+            TABLE_CHARACTER,
+            arrayOf(
+                COLUMN_ID, COLUMN_NAME, COLUMN_CLASS, COLUMN_RACE,
+                COLUMN_FORCA, COLUMN_DESTREZA, COLUMN_CONSTITUICAO,
+                COLUMN_INTELIGENCIA, COLUMN_SABEDORIA, COLUMN_CARISMA
+            ),
+            "$COLUMN_ID = ?",
+            arrayOf(id.toString()),
+            null,
+            null,
+            null
+        )
+
+        return if (cursor != null && cursor.moveToFirst()) {
+            val character = Character(
+                id = cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_ID)),
+                name = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_NAME)),
+                charClass = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_CLASS)),
+                race = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_RACE)),
+                attributes = Attributes(
+                    forca = cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_FORCA)),
+                    destreza = cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_DESTREZA)),
+                    constituicao = cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_CONSTITUICAO)),
+                    inteligencia = cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_INTELIGENCIA)),
+                    sabedoria = cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_SABEDORIA)),
+                    carisma = cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_CARISMA))
+                )
+            )
+            cursor.close()
+            character
+        } else {
+            cursor?.close()
+            null
+        }
+    }
 }
 
-// Data class para os atributos do personagem
 data class Attributes(
     val forca: Int,
     val destreza: Int,
@@ -160,4 +228,12 @@ data class Attributes(
     val inteligencia: Int,
     val sabedoria: Int,
     val carisma: Int
+)
+
+data class Character(
+    val id: Int,
+    val name: String,
+    val charClass: String,
+    val race: String,
+    val attributes: Attributes
 )
